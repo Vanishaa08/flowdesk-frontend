@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import {
   AppBar, Box, Drawer, IconButton,
@@ -10,9 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import LogoutIcon from '@mui/icons-material/Logout'
-import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../../store/slices/authSlice'
 
 const DRAWER_WIDTH = 240
@@ -28,6 +27,7 @@ function MainLayout() {
   const location = useLocation()
   const dispatch = useDispatch()
   const { user } = useSelector(state => state.auth)
+  const { projects } = useSelector(state => state.projects)
 
   const handleLogout = () => {
     dispatch(logout())
@@ -158,9 +158,31 @@ function MainLayout() {
           }}>
             Projects
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary', px: 1, fontSize: '0.8rem' }}>
-            No projects yet
-          </Typography>
+
+          {projects && projects.length > 0 ? (
+            projects.map(project => (
+              <ListItemButton key={project._id}
+                onClick={() => navigate(`/projects/${project._id}`)}
+                selected={location.pathname === `/projects/${project._id}`}
+                sx={{
+                  borderRadius: 2, mb: 0.5, py: 0.6,
+                  '&.Mui-selected': {
+                    bgcolor: 'rgba(124,110,244,0.15)',
+                    color: '#7C6EF4'
+                  },
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' }
+                }}>
+                <ListItemText
+                  primary={`${project.icon} ${project.name}`}
+                  primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: 500 }}
+                />
+              </ListItemButton>
+            ))
+          ) : (
+            <Typography variant="caption" sx={{ color: 'text.secondary', px: 1, fontSize: '0.8rem' }}>
+              No projects yet
+            </Typography>
+          )}
         </Box>
       </Drawer>
 

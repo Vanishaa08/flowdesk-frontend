@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProjectsPage from './pages/ProjectsPage'
+import ProjectDetailPage from './pages/ProjectDetailPage'
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute'
 
 function App() {
@@ -12,26 +13,21 @@ function App() {
       <Route path="/" element={<MainLayout />}>
         {/* Protected Routes */}
         <Route index element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
+          <ProtectedRoute><HomePage /></ProtectedRoute>
         } />
         <Route path="projects" element={
-          <ProtectedRoute>
-            <ProjectsPage />
-          </ProtectedRoute>
+          <ProtectedRoute><ProjectsPage /></ProtectedRoute>
+        } />
+        <Route path="projects/:projectId" element={
+          <ProtectedRoute><ProjectDetailPage /></ProtectedRoute>
         } />
 
         {/* Public Routes */}
         <Route path="login" element={
-          <PublicRoute>
-            <LoginPage />
-          </PublicRoute>
+          <PublicRoute><LoginPage /></PublicRoute>
         } />
         <Route path="register" element={
-          <PublicRoute>
-            <RegisterPage />
-          </PublicRoute>
+          <PublicRoute><RegisterPage /></PublicRoute>
         } />
       </Route>
     </Routes>
