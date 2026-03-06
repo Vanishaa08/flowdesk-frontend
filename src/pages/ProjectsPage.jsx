@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Box, Typography, Button, Grid, Card, CardContent,
-  CardActionArea, Chip, Avatar, Skeleton, IconButton,
-  Menu, MenuItem
+  Chip, Avatar, Skeleton, IconButton, Menu, MenuItem
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,6 +11,8 @@ import CreateProjectModal from '../components/projects/CreateProjectModal'
 import AddIcon from '@mui/icons-material/Add'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined'
+import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined'
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 
 function ProjectCard({ project, onDelete }) {
   const navigate = useNavigate()
@@ -20,13 +21,12 @@ function ProjectCard({ project, onDelete }) {
   return (
     <Card sx={{
       bgcolor: 'background.paper',
-      border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: 3, height: '100%',
+      borderRadius: 2,
       transition: 'all 0.2s ease',
       '&:hover': {
-        border: '1px solid rgba(124,110,244,0.3)',
-        transform: 'translateY(-2px)',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.3)'
+        border: '1px solid rgba(62,207,142,0.2)',
+        transform: 'translateY(-1px)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
       }
     }}>
       <CardContent sx={{ p: 2.5 }}>
@@ -34,73 +34,91 @@ function ProjectCard({ project, onDelete }) {
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{
-              width: 40, height: 40, borderRadius: 2,
-              bgcolor: 'rgba(124,110,244,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '20px'
+              width: 36, height: 36, borderRadius: 1.5,
+              bgcolor: 'rgba(62,207,142,0.1)',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: '17px'
             }}>
               {project.icon}
             </Box>
             <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.3 }}>
                 {project.name}
               </Typography>
               <Chip label={project.key} size="small" sx={{
-                height: 18, fontSize: '0.65rem', fontWeight: 700,
-                bgcolor: 'rgba(124,110,244,0.1)', color: '#7C6EF4',
-                mt: 0.3
+                height: 16, fontSize: '0.6rem', fontWeight: 700,
+                bgcolor: 'rgba(62,207,142,0.1)', color: '#3ECF8E', mt: 0.3
               }} />
             </Box>
           </Box>
-          <IconButton size="small" onClick={(e) => { e.stopPropagation(); setAnchorEl(e.currentTarget) }}>
-            <MoreVertIcon fontSize="small" />
+          <IconButton size="small"
+            onClick={(e) => { e.stopPropagation(); setAnchorEl(e.currentTarget) }}
+            sx={{ color: 'text.disabled', '&:hover': { color: 'text.primary' } }}>
+            <MoreVertIcon sx={{ fontSize: 17 }} />
           </IconButton>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
             <MenuItem onClick={() => { navigate(`/projects/${project._id}`); setAnchorEl(null) }}>
               Open Project
             </MenuItem>
+            <MenuItem onClick={() => { navigate(`/projects/${project._id}/board`); setAnchorEl(null) }}>
+              Kanban Board
+            </MenuItem>
             <MenuItem onClick={() => { onDelete(project._id); setAnchorEl(null) }}
               sx={{ color: '#EF4444' }}>
-              Delete Project
+              Delete
             </MenuItem>
           </Menu>
         </Box>
 
         {/* Description */}
         <Typography variant="body2" sx={{
-          color: 'text.secondary', mb: 2,
+          color: 'text.secondary', mb: 2, fontSize: '0.8rem',
           display: '-webkit-box', WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          minHeight: 40
+          WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 34
         }}>
-          {project.description || 'No description'}
+          {project.description || 'No description added yet'}
         </Typography>
 
-        {/* Footer */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* Meta */}
+        <Box sx={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          pt: 1.5, borderTop: '1px solid rgba(255,255,255,0.05)'
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Avatar sx={{ width: 24, height: 24, bgcolor: '#7C6EF4', fontSize: '0.7rem' }}>
+            <Avatar sx={{ width: 20, height: 20, bgcolor: '#3ECF8E', fontSize: '0.6rem', color: '#0f1117', fontWeight: 700 }}>
               {project.owner?.name?.charAt(0).toUpperCase()}
             </Avatar>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
               {project.owner?.name}
             </Typography>
           </Box>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography variant="caption" sx={{
+            color: 'text.disabled', fontSize: '0.72rem',
+            bgcolor: 'rgba(255,255,255,0.04)', px: 1, py: 0.3, borderRadius: 1
+          }}>
             {project.issueCount || 0} issues
           </Typography>
         </Box>
 
-        {/* Open Button */}
-        <Button fullWidth variant="outlined" size="small"
-          onClick={() => navigate(`/projects/${project._id}`)}
-          sx={{
-            mt: 2, borderColor: 'rgba(255,255,255,0.08)',
-            color: 'text.secondary', fontSize: '0.75rem',
-            '&:hover': { borderColor: '#7C6EF4', color: '#7C6EF4' }
-          }}>
-          Open Project
-        </Button>
+        {/* Buttons */}
+        <Box sx={{ display: 'flex', gap: 1, mt: 1.5 }}>
+          <Button fullWidth variant="outlined" size="small"
+            startIcon={<FormatListBulletedIcon sx={{ fontSize: 13 }} />}
+            onClick={() => navigate(`/projects/${project._id}`)}
+            sx={{ fontSize: '0.75rem', py: 0.6 }}>
+            Issues
+          </Button>
+          <Button fullWidth variant="outlined" size="small"
+            startIcon={<ViewKanbanOutlinedIcon sx={{ fontSize: 13 }} />}
+            onClick={() => navigate(`/projects/${project._id}/board`)}
+            sx={{
+              fontSize: '0.75rem', py: 0.6,
+              borderColor: 'rgba(62,207,142,0.2)', color: '#3ECF8E',
+              '&:hover': { bgcolor: 'rgba(62,207,142,0.05)', borderColor: '#3ECF8E' }
+            }}>
+            Board
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   )
@@ -111,12 +129,10 @@ function ProjectsPage() {
   const { projects, isLoading } = useSelector(state => state.projects)
   const [modalOpen, setModalOpen] = useState(false)
 
-  useEffect(() => {
-    dispatch(getProjects())
-  }, [dispatch])
+  useEffect(() => { dispatch(getProjects()) }, [dispatch])
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this project? This cannot be undone.')) {
+    if (window.confirm('Delete this project?')) {
       try {
         await dispatch(deleteProject(id)).unwrap()
         showSuccess('Project deleted')
@@ -127,43 +143,40 @@ function ProjectsPage() {
   }
 
   return (
-    <Box>
-      {/* Header */}
+    <Box sx={{ maxWidth: 1100 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>Projects</Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.3 }}>Projects</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.82rem' }}>
             {projects.length} project{projects.length !== 1 ? 's' : ''} in your workspace
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}
-          onClick={() => setModalOpen(true)}
-          sx={{ borderRadius: 2 }}>
+          onClick={() => setModalOpen(true)} sx={{ fontWeight: 600 }}>
           New Project
         </Button>
       </Box>
 
-      {/* Loading Skeletons */}
       {isLoading && (
-        <Grid container spacing={3}>
-          {[1,2,3].map(i => (
+        <Grid container spacing={2.5}>
+          {[1, 2, 3].map(i => (
             <Grid item xs={12} sm={6} md={4} key={i}>
-              <Skeleton variant="rounded" height={200} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+              <Skeleton variant="rounded" height={200}
+                sx={{ bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 2 }} />
             </Grid>
           ))}
         </Grid>
       )}
 
-      {/* Empty State */}
       {!isLoading && projects.length === 0 && (
         <Box sx={{
           textAlign: 'center', py: 10,
-          border: '1px dashed rgba(255,255,255,0.08)',
-          borderRadius: 3
+          border: '1px dashed rgba(255,255,255,0.07)',
+          borderRadius: 2, bgcolor: 'background.paper'
         }}>
-          <FolderOutlinedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>No projects yet</Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+          <FolderOutlinedIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 2 }} />
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>No projects yet</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, fontSize: '0.82rem' }}>
             Create your first project to get started
           </Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => setModalOpen(true)}>
@@ -172,9 +185,8 @@ function ProjectsPage() {
         </Box>
       )}
 
-      {/* Projects Grid */}
       {!isLoading && projects.length > 0 && (
-        <Grid container spacing={3}>
+        <Grid container spacing={2.5}>
           {projects.map(project => (
             <Grid item xs={12} sm={6} md={4} key={project._id}>
               <ProjectCard project={project} onDelete={handleDelete} />
@@ -183,11 +195,7 @@ function ProjectsPage() {
         </Grid>
       )}
 
-      {/* Create Modal */}
-      <CreateProjectModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      />
+      <CreateProjectModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </Box>
   )
 }

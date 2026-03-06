@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { createIssue } from '../../store/slices/issueSlice'
 import { showSuccess, showError } from '../../utils/toast'
 import CloseIcon from '@mui/icons-material/Close'
+import { useEffect } from 'react'
 
 const issueSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Too long'),
@@ -30,7 +31,7 @@ function CreateIssueModal({ open, onClose, projectId, defaultStatus = 'todo' }) 
   const dispatch = useDispatch()
   const { isLoading } = useSelector(state => state.issues)
 
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, reset, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(issueSchema),
     defaultValues: {
       title: '', description: '',
@@ -38,6 +39,11 @@ function CreateIssueModal({ open, onClose, projectId, defaultStatus = 'todo' }) 
       status: defaultStatus
     }
   })
+
+  // Update status when defaultStatus changes
+  useEffect(() => {
+    setValue('status', defaultStatus)
+  }, [defaultStatus, setValue])
 
   const onSubmit = async (data) => {
     try {

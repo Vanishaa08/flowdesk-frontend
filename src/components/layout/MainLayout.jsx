@@ -36,52 +36,52 @@ function MainLayout() {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+
       {/* Top Bar */}
       <AppBar position="fixed" sx={{ zIndex: 1201 }}>
-        <Toolbar sx={{ gap: 2 }}>
-          <IconButton color="inherit" onClick={() => setOpen(!open)} edge="start">
+        <Toolbar sx={{ gap: 2, minHeight: '56px !important' }}>
+          <IconButton color="inherit" onClick={() => setOpen(!open)} edge="start" size="small">
             <MenuIcon fontSize="small" />
           </IconButton>
 
           {/* Logo */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1 }}>
             <Box sx={{
-              width: 28, height: 28, borderRadius: '8px',
-              background: 'linear-gradient(135deg, #7C6EF4, #22D3EE)',
+              width: 26, height: 26, borderRadius: '7px',
+              background: '#3ECF8E',
               display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
-              <BoltOutlinedIcon sx={{ fontSize: 16, color: '#fff' }} />
+              <BoltOutlinedIcon sx={{ fontSize: 15, color: '#0f1117' }} />
             </Box>
             <Typography variant="h6" sx={{
-              fontWeight: 700, fontSize: '1rem',
-              background: 'linear-gradient(135deg, #F1F1F3, #8B8B9E)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+              fontWeight: 700, fontSize: '0.95rem', color: '#ededed'
             }}>
               FlowDesk
             </Typography>
             <Chip label="Beta" size="small" sx={{
-              height: 18, fontSize: '0.6rem', fontWeight: 600,
-              bgcolor: 'rgba(124,110,244,0.15)', color: '#7C6EF4',
-              border: '1px solid rgba(124,110,244,0.3)'
+              height: 16, fontSize: '0.6rem', fontWeight: 600,
+              bgcolor: 'rgba(62,207,142,0.1)', color: '#3ECF8E',
+              border: '1px solid rgba(62,207,142,0.2)'
             }} />
           </Box>
 
           {user ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Avatar sx={{ width: 30, height: 30, bgcolor: '#7C6EF4', fontSize: '0.8rem' }}>
+              <Avatar sx={{ width: 28, height: 28, bgcolor: '#3ECF8E', fontSize: '0.75rem', color: '#0f1117', fontWeight: 700 }}>
                 {user.name?.charAt(0).toUpperCase()}
               </Avatar>
-              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.82rem' }}>
                 {user.name}
               </Typography>
-              <IconButton size="small" onClick={handleLogout} sx={{ color: 'text.secondary' }}>
+              <IconButton size="small" onClick={handleLogout}
+                sx={{ color: 'text.secondary', '&:hover': { color: '#ededed' } }}>
                 <LogoutIcon fontSize="small" />
               </IconButton>
             </Box>
           ) : (
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button variant="outlined" size="small" onClick={() => navigate('/login')}
-                sx={{ borderColor: 'rgba(255,255,255,0.1)', color: 'text.secondary', fontSize: '0.8rem' }}>
+                sx={{ fontSize: '0.8rem' }}>
                 Login
               </Button>
               <Button variant="contained" size="small" onClick={() => navigate('/register')}
@@ -102,92 +102,106 @@ function MainLayout() {
           width: open ? DRAWER_WIDTH : 0,
           overflowX: 'hidden',
           transition: 'width 0.2s ease',
-          mt: '64px'
+          mt: '56px'
         }
       }}>
-        <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ p: 1.5, height: '100%', display: 'flex', flexDirection: 'column' }}>
+
           {/* Workspace */}
           <Box sx={{
-            p: 1.5, mb: 2, borderRadius: 2,
+            p: 1.5, mb: 1.5, borderRadius: 1.5,
             bgcolor: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(255,255,255,0.06)',
             display: 'flex', alignItems: 'center', gap: 1.5
           }}>
-            <Avatar sx={{ width: 28, height: 28, bgcolor: '#7C6EF4', fontSize: '0.75rem' }}>
+            <Avatar sx={{ width: 26, height: 26, bgcolor: '#3ECF8E', fontSize: '0.7rem', color: '#0f1117', fontWeight: 700 }}>
               {user ? user.name?.charAt(0).toUpperCase() : 'W'}
             </Avatar>
             <Box>
-              <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', lineHeight: 1.2 }}>
-                {user ? `${user.name}'s Space` : 'My Workspace'}
+              <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', lineHeight: 1.3, fontSize: '0.78rem' }}>
+                {user ? `${user.name?.split(' ')[0]}'s Space` : 'My Workspace'}
               </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.65rem' }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.68rem' }}>
                 Free Plan
               </Typography>
             </Box>
           </Box>
 
           {/* Nav */}
-          <List dense disablePadding>
+          <List dense disablePadding sx={{ mb: 1 }}>
             {navItems.map((item) => (
               <ListItemButton key={item.label}
                 onClick={() => navigate(item.path)}
                 selected={location.pathname === item.path}
                 sx={{
-                  borderRadius: 2, mb: 0.5, py: 0.8,
+                  borderRadius: 1.5, mb: 0.3, py: 0.7, px: 1.2,
                   '&.Mui-selected': {
-                    bgcolor: 'rgba(124,110,244,0.15)',
-                    color: '#7C6EF4',
-                    '& .MuiListItemIcon-root': { color: '#7C6EF4' }
+                    bgcolor: 'rgba(62,207,142,0.08)',
+                    color: '#3ECF8E',
+                    '& .MuiListItemIcon-root': { color: '#3ECF8E' }
                   },
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' }
                 }}>
-                <ListItemIcon sx={{ minWidth: 32, color: 'text.secondary' }}>
+                <ListItemIcon sx={{ minWidth: 30, color: 'text.secondary', fontSize: '0.85rem' }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText primary={item.label}
-                  primaryTypographyProps={{ fontSize: '0.85rem', fontWeight: 500 }} />
+                  primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: 500 }} />
               </ListItemButton>
             ))}
           </List>
 
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 1.5 }} />
+
+          {/* Projects Section */}
           <Typography variant="caption" sx={{
-            color: 'text.secondary', px: 1, mb: 1,
-            fontWeight: 600, letterSpacing: '0.08em',
-            textTransform: 'uppercase', fontSize: '0.65rem'
+            color: 'text.disabled', px: 1.2, mb: 1,
+            fontWeight: 600, letterSpacing: '0.07em',
+            textTransform: 'uppercase', fontSize: '0.62rem',
+            display: 'block'
           }}>
             Projects
           </Typography>
 
-          {projects && projects.length > 0 ? (
-            projects.map(project => (
-              <ListItemButton key={project._id}
-                onClick={() => navigate(`/projects/${project._id}`)}
-                selected={location.pathname === `/projects/${project._id}`}
-                sx={{
-                  borderRadius: 2, mb: 0.5, py: 0.6,
-                  '&.Mui-selected': {
-                    bgcolor: 'rgba(124,110,244,0.15)',
-                    color: '#7C6EF4'
-                  },
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' }
-                }}>
-                <ListItemText
-                  primary={`${project.icon} ${project.name}`}
-                  primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: 500 }}
-                />
-              </ListItemButton>
-            ))
-          ) : (
-            <Typography variant="caption" sx={{ color: 'text.secondary', px: 1, fontSize: '0.8rem' }}>
-              No projects yet
-            </Typography>
-          )}
+          <List dense disablePadding>
+            {projects && projects.length > 0 ? (
+              projects.map(project => (
+                <ListItemButton key={project._id}
+                  onClick={() => navigate(`/projects/${project._id}`)}
+                  selected={location.pathname.startsWith(`/projects/${project._id}`)}
+                  sx={{
+                    borderRadius: 1.5, mb: 0.3, py: 0.6, px: 1.2,
+                    '&.Mui-selected': {
+                      bgcolor: 'rgba(62,207,142,0.08)',
+                      color: '#3ECF8E'
+                    },
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' }
+                  }}>
+                  <ListItemText
+                    primary={`${project.icon} ${project.name}`}
+                    primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: 500, noWrap: true }}
+                  />
+                </ListItemButton>
+              ))
+            ) : (
+              <Typography variant="caption" sx={{
+                color: 'text.disabled', px: 1.2,
+                fontSize: '0.78rem', display: 'block'
+              }}>
+                No projects yet
+              </Typography>
+            )}
+          </List>
         </Box>
       </Drawer>
 
       {/* Main Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: '64px', minHeight: 'calc(100vh - 64px)' }}>
+      <Box component="main" sx={{
+        flexGrow: 1, p: 3,
+        mt: '56px',
+        minHeight: 'calc(100vh - 56px)',
+        bgcolor: 'background.default'
+      }}>
         <Outlet />
       </Box>
     </Box>

@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
+import KanbanPage from './pages/KanbanPage'
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute'
 
 function App() {
@@ -20,6 +21,9 @@ function App() {
         } />
         <Route path="projects/:projectId" element={
           <ProtectedRoute><ProjectDetailPage /></ProtectedRoute>
+        } />
+        <Route path="projects/:projectId/board" element={
+          <ProtectedRoute><KanbanPage /></ProtectedRoute>
         } />
 
         {/* Public Routes */}
