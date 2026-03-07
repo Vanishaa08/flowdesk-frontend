@@ -3,8 +3,7 @@ import {
   Box, Typography, Button, Chip, Avatar,
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, IconButton,
-  MenuItem, Select, FormControl, Skeleton,
-  Tooltip
+  MenuItem, Select, FormControl, Skeleton, Tooltip
 } from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -17,6 +16,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import ViewKanbanOutlinedIcon from '@mui/icons-material/ViewKanbanOutlined'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
+import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
 
 const PRIORITY_COLORS = {
   low: { bg: 'rgba(34,197,94,0.1)', color: '#22C55E' },
@@ -66,10 +66,10 @@ function ProjectDetailPage() {
   })
 
   const selectSx = {
-    height: 36, fontSize: '0.8rem',
+    height: 34, fontSize: '0.8rem',
     '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' },
     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#7C6EF4' }
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3ECF8E' }
   }
 
   return (
@@ -81,7 +81,7 @@ function ProjectDetailPage() {
           <ArrowBackIcon fontSize="small" />
         </IconButton>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1 }}>
-          <Typography variant="h5" sx={{ fontSize: '1.5rem' }}>
+          <Typography variant="h5" sx={{ fontSize: '1.4rem' }}>
             {currentProject?.icon}
           </Typography>
           <Box>
@@ -94,7 +94,7 @@ function ProjectDetailPage() {
           </Box>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />}
-          onClick={() => setModalOpen(true)} sx={{ borderRadius: 2 }}>
+          onClick={() => setModalOpen(true)}>
           Add Issue
         </Button>
       </Box>
@@ -102,7 +102,8 @@ function ProjectDetailPage() {
       {/* Filters + View Toggle */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <FormControl size="small" sx={{ minWidth: 130 }}>
-          <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} sx={selectSx}>
+          <Select value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)} sx={selectSx}>
             <MenuItem value="all">All Status</MenuItem>
             <MenuItem value="todo">Todo</MenuItem>
             <MenuItem value="in_progress">In Progress</MenuItem>
@@ -112,7 +113,8 @@ function ProjectDetailPage() {
         </FormControl>
 
         <FormControl size="small" sx={{ minWidth: 130 }}>
-          <Select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} sx={selectSx}>
+          <Select value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value)} sx={selectSx}>
             <MenuItem value="all">All Priority</MenuItem>
             <MenuItem value="low">Low</MenuItem>
             <MenuItem value="medium">Medium</MenuItem>
@@ -121,19 +123,29 @@ function ProjectDetailPage() {
           </Select>
         </FormControl>
 
+        {/* View Toggle */}
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Tooltip title="List View">
-            <IconButton size="small"
-              onClick={() => setView('list')}
-              sx={{ bgcolor: view === 'list' ? 'rgba(124,110,244,0.15)' : 'transparent', color: view === 'list' ? '#7C6EF4' : 'text.secondary' }}>
+            <IconButton size="small" onClick={() => setView('list')}
+              sx={{
+                bgcolor: view === 'list' ? 'rgba(62,207,142,0.1)' : 'transparent',
+                color: view === 'list' ? '#3ECF8E' : 'text.secondary'
+              }}>
               <FormatListBulletedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Kanban View (Day 7)">
+          <Tooltip title="Kanban Board">
             <IconButton size="small"
               onClick={() => navigate(`/projects/${projectId}/board`)}
-              sx={{ bgcolor: view === 'kanban' ? 'rgba(124,110,244,0.15)' : 'transparent', color: view === 'kanban' ? '#7C6EF4' : 'text.secondary' }}>
+              sx={{ color: 'text.secondary', '&:hover': { color: '#3ECF8E' } }}>
               <ViewKanbanOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Sprints">
+            <IconButton size="small"
+              onClick={() => navigate(`/projects/${projectId}/sprints`)}
+              sx={{ color: 'text.secondary', '&:hover': { color: '#3ECF8E' } }}>
+              <FlagOutlinedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </Box>
@@ -150,7 +162,8 @@ function ProjectDetailPage() {
       ) : filteredIssues.length === 0 ? (
         <Box sx={{
           textAlign: 'center', py: 10,
-          border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 3
+          border: '1px dashed rgba(255,255,255,0.07)',
+          borderRadius: 2
         }}>
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
             No issues found
@@ -169,7 +182,7 @@ function ProjectDetailPage() {
         <TableContainer component={Paper} sx={{
           bgcolor: 'background.paper',
           border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 3
+          borderRadius: 2
         }}>
           <Table>
             <TableHead>
@@ -177,9 +190,8 @@ function ProjectDetailPage() {
                 {['Type', 'Title', 'Status', 'Priority', 'Assignee', 'Created', ''].map(h => (
                   <TableCell key={h} sx={{
                     color: 'text.secondary', fontWeight: 700,
-                    fontSize: '0.75rem', textTransform: 'uppercase',
-                    letterSpacing: '0.06em', py: 1.5,
-                    borderBottom: '1px solid rgba(255,255,255,0.06)'
+                    fontSize: '0.72rem', textTransform: 'uppercase',
+                    letterSpacing: '0.06em', py: 1.5
                   }}>
                     {h}
                   </TableCell>
@@ -193,19 +205,18 @@ function ProjectDetailPage() {
                 return (
                   <TableRow key={issue._id} hover sx={{
                     cursor: 'pointer',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
-                    '& td': { borderBottom: '1px solid rgba(255,255,255,0.04)' }
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' }
                   }}>
                     <TableCell sx={{ py: 1.5 }}>
                       <Chip label={issue.type} size="small" sx={{
-                        height: 20, fontSize: '0.65rem', fontWeight: 700,
+                        height: 18, fontSize: '0.62rem', fontWeight: 700,
                         textTransform: 'capitalize',
-                        bgcolor: 'rgba(124,110,244,0.1)', color: '#7C6EF4'
+                        bgcolor: 'rgba(62,207,142,0.08)', color: '#3ECF8E'
                       }} />
                     </TableCell>
                     <TableCell sx={{ py: 1.5, maxWidth: 300 }}>
                       <Typography variant="body2" sx={{
-                        fontWeight: 600,
+                        fontWeight: 600, fontSize: '0.85rem',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                       }}>
                         {issue.title}
@@ -213,13 +224,13 @@ function ProjectDetailPage() {
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <Chip label={status?.label} size="small" sx={{
-                        height: 20, fontSize: '0.65rem', fontWeight: 700,
+                        height: 18, fontSize: '0.62rem', fontWeight: 700,
                         bgcolor: status?.bg, color: status?.color
                       }} />
                     </TableCell>
                     <TableCell sx={{ py: 1.5 }}>
                       <Chip label={issue.priority} size="small" sx={{
-                        height: 20, fontSize: '0.65rem', fontWeight: 700,
+                        height: 18, fontSize: '0.62rem', fontWeight: 700,
                         textTransform: 'capitalize',
                         bgcolor: priority?.bg, color: priority?.color
                       }} />
@@ -227,7 +238,7 @@ function ProjectDetailPage() {
                     <TableCell sx={{ py: 1.5 }}>
                       {issue.assignee ? (
                         <Tooltip title={issue.assignee.name}>
-                          <Avatar sx={{ width: 24, height: 24, bgcolor: '#7C6EF4', fontSize: '0.7rem' }}>
+                          <Avatar sx={{ width: 22, height: 22, bgcolor: '#3ECF8E', fontSize: '0.65rem', color: '#0f1117', fontWeight: 700 }}>
                             {issue.assignee.name?.charAt(0)}
                           </Avatar>
                         </Tooltip>
@@ -257,7 +268,6 @@ function ProjectDetailPage() {
         </TableContainer>
       )}
 
-      {/* Create Issue Modal */}
       <CreateIssueModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

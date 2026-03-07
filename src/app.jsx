@@ -6,13 +6,13 @@ import RegisterPage from './pages/RegisterPage'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
 import KanbanPage from './pages/KanbanPage'
+import SprintPage from './pages/SprintPage'
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        {/* Protected Routes */}
         <Route index element={
           <ProtectedRoute><HomePage /></ProtectedRoute>
         } />
@@ -25,8 +25,9 @@ function App() {
         <Route path="projects/:projectId/board" element={
           <ProtectedRoute><KanbanPage /></ProtectedRoute>
         } />
-
-        {/* Public Routes */}
+        <Route path="projects/:projectId/sprints" element={
+          <ProtectedRoute><SprintPage /></ProtectedRoute>
+        } />
         <Route path="login" element={
           <PublicRoute><LoginPage /></PublicRoute>
         } />
