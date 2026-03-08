@@ -7,6 +7,7 @@ import ProjectsPage from './pages/ProjectsPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
 import KanbanPage from './pages/KanbanPage'
 import SprintPage from './pages/SprintPage'
+import BurndownPage from './pages/BurndownPage'
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute'
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
         } />
         <Route path="projects/:projectId/sprints" element={
           <ProtectedRoute><SprintPage /></ProtectedRoute>
+        } />
+        <Route path="projects/:projectId/burndown" element={
+          <ProtectedRoute><BurndownPage /></ProtectedRoute>
         } />
         <Route path="login" element={
           <PublicRoute><LoginPage /></PublicRoute>

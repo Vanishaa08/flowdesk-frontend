@@ -95,6 +95,11 @@ function SprintCard({ sprint, projectId, issues, onStart, onComplete, onDelete, 
   const totalCount = sprintIssues.length
   const progress = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
 
+  const totalPoints = sprintIssues.reduce((sum, i) => sum + (i.storyPoints || 0), 0)
+  const donePoints = sprintIssues
+    .filter(i => i.status === 'done')
+    .reduce((sum, i) => sum + (i.storyPoints || 0), 0)
+
   const daysLeft = sprint.endDate
     ? Math.ceil((new Date(sprint.endDate) - new Date()) / (1000 * 60 * 60 * 24))
     : null
@@ -123,6 +128,15 @@ function SprintCard({ sprint, projectId, issues, onStart, onComplete, onDelete, 
                   height: 18, fontSize: '0.65rem', fontWeight: 700,
                   bgcolor: daysLeft > 0 ? 'rgba(34,211,238,0.1)' : 'rgba(239,68,68,0.1)',
                   color: daysLeft > 0 ? '#22D3EE' : '#EF4444'
+                }}
+              />
+            )}
+            {totalPoints > 0 && (
+              <Chip
+                label={`${donePoints}/${totalPoints} pts`}
+                size="small" sx={{
+                  height: 18, fontSize: '0.65rem', fontWeight: 700,
+                  bgcolor: 'rgba(62,207,142,0.08)', color: '#3ECF8E'
                 }}
               />
             )}
@@ -219,6 +233,12 @@ function SprintCard({ sprint, projectId, issues, onStart, onComplete, onDelete, 
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {issue.storyPoints > 0 && (
+                  <Chip label={`${issue.storyPoints}pt`} size="small" sx={{
+                    height: 16, fontSize: '0.6rem', fontWeight: 700,
+                    bgcolor: 'rgba(62,207,142,0.08)', color: '#3ECF8E'
+                  }} />
+                )}
                 <Chip label={issue.priority} size="small" sx={{
                   height: 16, fontSize: '0.6rem', fontWeight: 600,
                   textTransform: 'capitalize',
@@ -303,6 +323,7 @@ function AddIssueToSprintModal({ open, onClose, projectId, sprintId }) {
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.disabled', textTransform: 'capitalize' }}>
                     {issue.type} · {issue.priority}
+                    {issue.storyPoints > 0 && ` · ${issue.storyPoints}pts`}
                   </Typography>
                 </Box>
                 <Button size="small" variant="outlined"
@@ -393,10 +414,23 @@ function SprintPage() {
             {sprints.length} sprints · {activeSprints.length} active
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />}
-          onClick={() => setCreateModalOpen(true)}>
-          New Sprint
-        </Button>
+
+        {/* Buttons */}
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" size="small"
+            onClick={() => navigate(`/projects/${projectId}/burndown`)}
+            sx={{
+              borderColor: 'rgba(255,255,255,0.1)',
+              color: 'text.secondary', fontSize: '0.8rem',
+              '&:hover': { borderColor: '#3ECF8E', color: '#3ECF8E' }
+            }}>
+            📉 Burndown Chart
+          </Button>
+          <Button variant="contained" startIcon={<AddIcon />}
+            onClick={() => setCreateModalOpen(true)}>
+            New Sprint
+          </Button>
+        </Box>
       </Box>
 
       {isLoading ? (
@@ -423,7 +457,6 @@ function SprintPage() {
         </Box>
       ) : (
         <Box>
-          {/* Active */}
           {activeSprints.length > 0 && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="caption" sx={{
@@ -444,7 +477,6 @@ function SprintPage() {
             </Box>
           )}
 
-          {/* Planned */}
           {plannedSprints.length > 0 && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="caption" sx={{
@@ -465,7 +497,6 @@ function SprintPage() {
             </Box>
           )}
 
-          {/* Completed */}
           {completedSprints.length > 0 && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="caption" sx={{
