@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -37,10 +39,8 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // If 401 and not already retrying
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        // Queue requests while refreshing
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
         }).then(token => {
@@ -56,14 +56,15 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken')
         if (!refreshToken) throw new Error('No refresh token')
 
-        const response = await axios.post('/api/auth/refresh-token', { refreshToken })
+        const response = await axios.post(
+          `${BASE_URL}/auth/refresh-token`,
+          { refreshToken }
+        )
         const { accessToken, refreshToken: newRefreshToken } = response.data
 
-        // Update stored tokens
         localStorage.setItem('token', accessToken)
         localStorage.setItem('refreshToken', newRefreshToken)
 
-        // Update auth header
         api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
         originalRequest.headers.Authorization = `Bearer ${accessToken}`
 
@@ -72,7 +73,6 @@ api.interceptors.response.use(
 
       } catch (refreshError) {
         processQueue(refreshError, null)
-        // Clear everything and redirect to login
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('user')
