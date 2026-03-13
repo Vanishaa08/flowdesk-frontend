@@ -11,6 +11,7 @@ import { getProject } from '../store/slices/projectSlice'
 import { getIssues, deleteIssue } from '../store/slices/issueSlice'
 import { showSuccess, showError } from '../utils/toast'
 import CreateIssueModal from '../components/issues/CreateIssueModal'
+import IssueDetailModal from '../components/issues/IssueDetailModal'
 import AddIcon from '@mui/icons-material/Add'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
@@ -39,6 +40,7 @@ function ProjectDetailPage() {
   const { currentProject } = useSelector(state => state.projects)
   const { issues, isLoading } = useSelector(state => state.issues)
   const [modalOpen, setModalOpen] = useState(false)
+  const [selectedIssue, setSelectedIssue] = useState(null)
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterPriority, setFilterPriority] = useState('all')
   const [view, setView] = useState('list')
@@ -48,11 +50,20 @@ function ProjectDetailPage() {
     dispatch(getIssues({ projectId, filters: {} }))
   }, [dispatch, projectId])
 
+  // Keep selectedIssue in sync with Redux updates
+  useEffect(() => {
+    if (selectedIssue) {
+      const updated = issues.find(i => i._id === selectedIssue._id)
+      if (updated) setSelectedIssue(updated)
+    }
+  }, [issues])
+
   const handleDelete = async (issueId) => {
     if (window.confirm('Delete this issue?')) {
       try {
         await dispatch(deleteIssue({ projectId, issueId })).unwrap()
         showSuccess('Issue deleted')
+        setSelectedIssue(null)
       } catch (error) {
         showError(error || 'Failed to delete issue')
       }
@@ -203,10 +214,12 @@ function ProjectDetailPage() {
                 const status = STATUS_COLORS[issue.status]
                 const priority = PRIORITY_COLORS[issue.priority]
                 return (
-                  <TableRow key={issue._id} hover sx={{
-                    cursor: 'pointer',
-                    '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' }
-                  }}>
+                  <TableRow key={issue._id} hover
+                    onClick={() => setSelectedIssue(issue)}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' }
+                    }}>
                     <TableCell sx={{ py: 1.5 }}>
                       <Chip label={issue.type} size="small" sx={{
                         height: 18, fontSize: '0.62rem', fontWeight: 700,
@@ -271,6 +284,13 @@ function ProjectDetailPage() {
       <CreateIssueModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
+        projectId={projectId}
+      />
+
+      <IssueDetailModal
+        open={!!selectedIssue}
+        onClose={() => setSelectedIssue(null)}
+        issue={selectedIssue}
         projectId={projectId}
       />
     </Box>

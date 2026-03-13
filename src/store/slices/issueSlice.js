@@ -144,11 +144,16 @@ const issueSlice = createSlice({
         state.issues = state.issues.filter(i => i._id !== action.payload)
       })
       // Add Comment
-      .addCase(addComment.fulfilled, (state, action) => {
-        if (state.currentIssue) {
-          state.currentIssue.comments.push(action.payload.comment)
-        }
-      })
+.addCase(addComment.fulfilled, (state, action) => {
+  const updatedIssue = action.payload.issue
+  if (updatedIssue) {
+    const index = state.issues.findIndex(i => i._id === updatedIssue._id)
+    if (index !== -1) state.issues[index] = updatedIssue
+    if (state.currentIssue?._id === updatedIssue._id) {
+      state.currentIssue = updatedIssue
+    }
+  }
+})
   }
 })
 
